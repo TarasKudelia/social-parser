@@ -10,18 +10,11 @@ from parsers.youtube import yt_parse
 
 log = logging.getLogger(__name__)
 
-# list_of_YT_accs = [
-#     '@StratEdgyProductions',
-#     '@MrBeast',
-#     '@UnusualVideos',
-#     '@DEFCONConference',
-# ]
-list_of_IG_accs = [
-    # 'arianagrande',
-    # 'nasa',
-    # 'nike',
-    'siriy_ua',
-]
+sns = {
+    'youtube': yt_parse,
+    'instagram': ig_parse,
+}
+
 
 # Setting up args parser
 parser = argparse.ArgumentParser(
@@ -55,21 +48,22 @@ def file_to_acc_list(file_path: Path) -> list[str]:
 def main() -> None:
     args = parser.parse_args()
 
-    # process YT
-    yt_acc_file = args.youtube
-    yt_accs = file_to_acc_list(yt_acc_file)
-    if not yt_accs:
-        log.debug(f'No Youtube accounts provided or found in {yt_acc_file}')
-
     results = {}
+
     with sync_playwright() as pw:
-        log.info('Do work')
+        log.info('processing social networks')
+        browser = pw.chromium.launch()
 
-        if yt_accs:
-            results['youtube'] = yt_parse(yt_accs)
+        for sn_name, func in sns.items():
+            file_path = getattr(args, sn_name)
+            account_list = file_to_acc_list(file_path)
+            if not account_list:
+                log.info(f'No [{sn_name}] accounts found in {file_path}')
+                continue
 
-        # if ig_acccs:
-        #     results['instagram'] = ig_parse(pw)
+            results[sn_name] = func(account_list, browser=browser)
+
+    # TODO: data saving
     print(results)
 
 

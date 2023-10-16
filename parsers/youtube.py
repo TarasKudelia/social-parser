@@ -5,7 +5,7 @@ import re
 
 import requests
 from bs4 import BeautifulSoup, SoupStrainer
-from playwright.sync_api import Playwright
+from playwright.sync_api import Playwright, Browser
 
 
 YT_ROOT_URL = 'https://www.youtube.com/'
@@ -15,17 +15,11 @@ YT_VIDEO_URL = YT_ROOT_URL + 'watch?v={}'
 log = logging.getLogger(__name__)
 
 
-def yt_parse(user_list, pw: Playwright = None, as_string=True) -> dict or str:
+def yt_parse(user_list, browser: Browser = None, as_string=True) -> dict or str:
     log.debug(f'[YT] Recieved account file: {user_list}')
     parsed_vids = {}
 
-    page = None
-    if pw:
-        browser = pw.chromium.launch()
-        context = browser.new_context()
-        page = context.new_page()
-
-    new_video_ids = ChannelParser.get_new_videos(user_list, page=page)
+    new_video_ids = ChannelParser.get_new_videos(user_list)
     for channel_id, ch_data in new_video_ids.items():
         vid_stats = {}
         # TODO -  if Account.get(k).not_exists() >> Account().create()
@@ -123,7 +117,6 @@ class ChannelParser:
 
     @staticmethod
     def get_new_videos(account_list: list[str],
-                       page=None,
                        start_date: datetime = None,
                        stop_date: datetime = None,
                        max_amount: int = 30,
@@ -133,10 +126,7 @@ class ChannelParser:
         for acc in account_list:
             errors = {}
             try:
-                if page:
-                    vids_json = ChannelParser._get_videos_json_pw(page, acc)
-                else:
-                    vids_json = ChannelParser._get_videos_json(acc)
+                vids_json = ChannelParser._get_videos_json(acc)
             except Exception as e:
                 errors['request']: repr(e)
                 continue
