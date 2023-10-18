@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import datetime
 import logging
 from pathlib import Path
 
@@ -52,7 +53,6 @@ def main() -> None:
 
     with sync_playwright() as pw:
         log.info('processing social networks')
-        browser = pw.chromium.launch()
 
         for sn_name, func in sns.items():
             file_path = getattr(args, sn_name)
@@ -61,7 +61,13 @@ def main() -> None:
                 log.info(f'No [{sn_name}] accounts found in {file_path}')
                 continue
 
-            results[sn_name] = func(account_list, browser=browser)
+            from_date = datetime.datetime.now() - datetime.date.day
+
+            results[sn_name] = func(
+                account_list=account_list,
+                from_date=from_date,
+                pw=pw
+            )
 
     # TODO: data saving
     print(results)

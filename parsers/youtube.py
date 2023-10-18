@@ -15,7 +15,12 @@ YT_VIDEO_URL = YT_ROOT_URL + 'watch?v={}'
 log = logging.getLogger(__name__)
 
 
-def yt_parse(user_list, browser: Browser = None, as_string=True) -> dict or str:
+def yt_parse(
+        user_list,
+        from_date: datetime,
+        as_string=True,
+        pw: Playwright = None
+) -> dict or str:
     log.debug(f'[YT] Recieved account file: {user_list}')
     parsed_vids = {}
 
