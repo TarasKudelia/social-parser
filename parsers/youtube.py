@@ -19,7 +19,8 @@ def yt_parse(
         user_list,
         from_date: datetime,
         as_string=True,
-        pw: Playwright = None
+        pw: Playwright = None,
+        **kwargs
 ) -> dict or str:
     log.debug(f'[YT] Recieved account file: {user_list}')
     parsed_vids = {}

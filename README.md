@@ -14,5 +14,8 @@ Install playwright packages:\
 ---
 ### Run parser:
 
-`$ python main.py -yt youtube_list.txt -ig instagram_list.txt`\
+`$ python main.py
+    -yt [youtube_list.txt] 
+    -ig [instagram_list.txt]
+    -d [dd.mm.yyyy]` \
 All flags (-yt, -ig, ...) are optional and you can specify as many as you want.s
