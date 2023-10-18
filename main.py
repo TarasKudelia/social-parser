@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
-import datetime
 import logging
+from datetime import timedelta, datetime
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
@@ -15,7 +15,6 @@ sns = {
     'youtube': yt_parse,
     'instagram': ig_parse,
 }
-
 
 # Setting up args parser
 parser = argparse.ArgumentParser(
@@ -61,7 +60,7 @@ def main() -> None:
                 log.info(f'No [{sn_name}] accounts found in {file_path}')
                 continue
 
-            from_date = datetime.datetime.now() - datetime.date.day
+            from_date = datetime.now() - timedelta(days=7)
 
             results[sn_name] = func(
                 account_list=account_list,
