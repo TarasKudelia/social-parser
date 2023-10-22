@@ -3,7 +3,6 @@ import re
 from dataclasses import dataclass
 from datetime import datetime
 
-import playwright
 from playwright.sync_api import Page, Playwright, Locator
 
 
@@ -84,7 +83,7 @@ def get_account_with_retries(page, acc_to_scrape, retries: int) -> IGAccPage:
 
 def ig_parse(account_list, pw: Playwright, from_date: datetime):
     # Emulate IPhone 8 platform to minimize IG scrape blocking
-    iphone_8 = playwright.devices['iPhone 8']
+    iphone_8 = pw.devices['iPhone 8']
 
     browser = pw.chromium.launch()
     context = browser.new_context(**iphone_8)
