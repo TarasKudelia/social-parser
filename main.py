@@ -10,6 +10,7 @@ from parsers.youtube import yt_parse
 
 
 log = logging.getLogger(__name__)
+log.setLevel('DEBUG')
 
 sns = {
     'youtube': yt_parse,
@@ -38,11 +39,17 @@ parser.add_argument(
     help='Date in past, reaching which parser would stop.'
          'Format [dd.mm.yyyy]. If not specified - set as week before.'
 )
+parser.add_argument(
+    '-hh', '--headed',
+    action='store_true',
+    help='Run browser in headed mode. Default false'
+)
 
 
 def main() -> None:
     args = parser.parse_args()
     from_date = get_stop_date(getattr(args, 'date'))
+    is_headed = args.headed
 
     results = {}
 
@@ -59,7 +66,8 @@ def main() -> None:
             results[sn_name] = func(
                 account_list=account_list,
                 from_date=from_date,
-                pw=pw
+                pw=pw,
+                headless=not is_headed
             )
 
     # TODO: data saving
